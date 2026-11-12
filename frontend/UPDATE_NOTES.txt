@@ -1,0 +1,25 @@
+PortfolioForge frontend update
+
+Included in this update:
+1. Dashboard live portfolio preview based on the portfolio data already saved in browser storage.
+2. Portfolio health panel based on completion of the existing personal, education, projects, experience and skills sections.
+3. Quick-action links to the existing portfolio editor sections.
+4. Copyable career/contact card using the saved profile details.
+5. Browser print / Save as PDF action from the dashboard preview.
+6. Job Application Tracker page at /job-tracker. It supports adding opportunities, status changes, filtering, notes, job links and deletion.
+
+Important limitations:
+- Job tracker entries are stored in this browser's localStorage on this device. They are not synced to the user's account or Neon database yet. Backend work is needed for cross-device/account syncing.
+- Portfolio health and preview are derived from the data available in the current frontend storage. The existing editor saves the canonical portfolio through the backend; revisit the editor/dashboard after saving to refresh the preview.
+- Visitor analytics, QR generation, GitHub OAuth integration, testimonials moderation, version history and multi-portfolio support need additional backend/API work and are not represented as completed in this frontend-only package.
+- PDF export uses the browser's Print dialog; choose "Save as PDF".
+
+Installation:
+1. Back up your current frontend folder.
+2. Extract this ZIP.
+3. Copy the contents of the Frontend folder over your existing E:\Coding\Portfolio\frontend folder. Do not copy node_modules from an old installation.
+4. In PowerShell: cd E:\Coding\Portfolio\frontend
+5. Run: npm install
+6. Run: npm run dev
+
+No backend files or .env values are changed by this frontend package.

@@ -25,6 +25,10 @@ class UserLogin(BaseModel):
     password: str = Field(min_length=1, max_length=128)
 
 
+class GoogleTokenRequest(BaseModel):
+    credential: str = Field(min_length=20, max_length=10000)
+
+
 class UserResponse(BaseModel):
     id: int
     full_name: str
@@ -153,3 +157,36 @@ class PortfolioResponse(BaseModel):
 #     user_id: int
 
 #     model_config = ConfigDict(from_attributes=True)
+
+
+# --------------------------------------------------
+# Job application tracker schemas
+# --------------------------------------------------
+
+class JobApplicationBase(BaseModel):
+    company: str = Field(min_length=1, max_length=160)
+    role: str = Field(min_length=1, max_length=160)
+    location: str | None = Field(default=None, max_length=160)
+    status: Literal["Interested", "Applied", "Interview", "Offer", "Rejected"] = "Interested"
+    applied_date: str | None = Field(default=None, max_length=20)
+    job_url: str | None = Field(default=None, max_length=1000)
+    notes: str | None = Field(default=None, max_length=10000)
+
+
+class JobApplicationCreate(JobApplicationBase):
+    pass
+
+
+class JobApplicationUpdate(JobApplicationBase):
+    pass
+
+
+class JobApplicationResponse(JobApplicationBase):
+    id: int
+    user_id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class PublishRequest(BaseModel):
+    slug: str = Field(min_length=3, max_length=80, pattern=r"^[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*$")

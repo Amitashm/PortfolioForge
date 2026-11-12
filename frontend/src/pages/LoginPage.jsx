@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../services/auth";
+import GoogleSignInButton from "../components/auth/GoogleSignInButton";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -132,6 +133,8 @@ function LoginPage() {
               )}
             </button>
           </form>
+
+          <GoogleSignInButton />
 
           <p className="mt-7 text-center text-sm text-[#9CA79E]">
             Don't have an account?{" "}

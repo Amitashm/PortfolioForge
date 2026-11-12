@@ -28,7 +28,11 @@ function TemplateRenderer({ template = "minimal", data = {} }) {
     );
   }
 
-  return <SelectedTemplate data={data} />;
+  return (
+    <div className={`portfolio-template-enter portfolio-template-enter--${template}`} key={template}>
+      <SelectedTemplate data={data} />
+    </div>
+  );
 }
 
 export default TemplateRenderer;

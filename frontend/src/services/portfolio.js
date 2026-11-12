@@ -50,3 +50,52 @@ export function saveMyPortfolio({ template, portfolio_data }) {
     }),
   });
 }
+
+
+// Publishing endpoints are handled by the backend. Public portfolio reads do not require login.
+export function publishMyPortfolio(slug) {
+  return portfolioRequest("/api/portfolio/publish", {
+    method: "POST",
+    body: JSON.stringify({ slug }),
+  });
+}
+
+export function unpublishMyPortfolio() {
+  return portfolioRequest("/api/portfolio/publish", { method: "DELETE" });
+}
+
+export async function getPublicPortfolio(slug) {
+  const response = await fetch(`${API_BASE_URL}/api/portfolio/public/${encodeURIComponent(slug)}`);
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.detail || "This portfolio is not published or does not exist.");
+  return data;
+}
+
+// Multi-portfolio management (requires the matching backend endpoints).
+export function getPortfolios() {
+  return portfolioRequest("/api/portfolios", { method: "GET" });
+}
+
+export function createPortfolio(payload = {}) {
+  return portfolioRequest("/api/portfolios", { method: "POST", body: JSON.stringify(payload) });
+}
+
+export function getPortfolioById(id) {
+  return portfolioRequest(`/api/portfolios/${encodeURIComponent(id)}`, { method: "GET" });
+}
+
+export function savePortfolioById(id, payload) {
+  return portfolioRequest(`/api/portfolios/${encodeURIComponent(id)}`, { method: "PUT", body: JSON.stringify(payload) });
+}
+
+export function deletePortfolio(id) {
+  return portfolioRequest(`/api/portfolios/${encodeURIComponent(id)}`, { method: "DELETE" });
+}
+
+export function publishPortfolio(id, slug) {
+  return portfolioRequest(`/api/portfolios/${encodeURIComponent(id)}/publish`, { method: "POST", body: JSON.stringify({ slug }) });
+}
+
+export function unpublishPortfolio(id) {
+  return portfolioRequest(`/api/portfolios/${encodeURIComponent(id)}/publish`, { method: "DELETE" });
+}

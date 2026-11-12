@@ -11,10 +11,12 @@ BACKEND_DIR = Path(__file__).resolve().parent.parent
 
 
 
-    
 class Settings(BaseSettings):
     DATABASE_URL: str
     SECRET_KEY: str
+    GOOGLE_CLIENT_ID: str | None = None
+    GOOGLE_CLIENT_SECRET: str | None = None
+
     model_config = SettingsConfigDict(
         env_file=BACKEND_DIR / ".env",
         env_file_encoding="utf-8",

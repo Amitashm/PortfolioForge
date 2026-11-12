@@ -4,6 +4,8 @@ import { templates } from "../data/templates";
 import {
   getMyPortfolio,
   saveMyPortfolio,
+  getPortfolioById,
+  savePortfolioById,
 } from "../services/portfolio";
 
 const steps = [
@@ -37,6 +39,7 @@ function CreatePortfolioPage() {
   const [searchParams] = useSearchParams();
 
   const requestedStep = searchParams.get("step");
+  const portfolioId = searchParams.get("portfolioId");
 
   const stepIndex = {
     personal: 0,
@@ -82,11 +85,17 @@ function CreatePortfolioPage() {
 
     async function loadPortfolio() {
       try {
-        const result = await getMyPortfolio();
+        const result = portfolioId ? await getPortfolioById(portfolioId) : await getMyPortfolio();
+        const portfolio = result.portfolio || result;
 
         if (!active) return;
 
-        const savedData = result.portfolio_data || {};
+        const savedData = portfolio.portfolio_data || {};
+
+        // Keep the dashboard in sync with the portfolio retrieved from the API.
+        localStorage.setItem("portfolioData", JSON.stringify(savedData));
+        localStorage.setItem("selectedTemplate", portfolio.template || selectedTemplate);
+
         const defaults = emptyPortfolio(
           sessionStorage.getItem("user")
             ? JSON.parse(sessionStorage.getItem("user")).full_name || ""
@@ -110,8 +119,8 @@ function CreatePortfolioPage() {
             : [],
         });
 
-        if (!validRequestedTemplate && result.template) {
-          setSelectedTemplate(result.template);
+        if (!validRequestedTemplate && portfolio.template) {
+          setSelectedTemplate(portfolio.template);
         }
       } catch (err) {
         if (active) {
@@ -222,10 +231,16 @@ function CreatePortfolioPage() {
     };
 
     try {
-      await saveMyPortfolio({
-        template: selectedTemplate,
-        portfolio_data: cleanedData,
-      });
+      const payload = { template: selectedTemplate, portfolio_data: cleanedData };
+      if (portfolioId) await savePortfolioById(portfolioId, payload);
+      else await saveMyPortfolio(payload);
+
+      // Update the dashboard cache only after the backend confirms the save.
+      localStorage.setItem("portfolioData", JSON.stringify(cleanedData));
+      localStorage.setItem("selectedTemplate", selectedTemplate);
+      window.dispatchEvent(
+        new CustomEvent("portfolioUpdated", { detail: cleanedData })
+      );
 
       setFormData(cleanedData);
       setNotice("Your portfolio has been saved.");
@@ -517,13 +532,13 @@ function CreatePortfolioPage() {
                 You can change the design later without re-entering your data.
               </p>
 
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <div className="mt-6 grid gap-5 sm:grid-cols-2">
                 {templates.map((template) => (
                   <label
                     key={template.id}
-                    className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition ${selectedTemplate === template.id
-                      ? "border-[#00C875] bg-[#00C875]/10"
-                      : "border-white/10 hover:border-white/25"
+                    className={`template-choice-card group relative block cursor-pointer overflow-hidden rounded-2xl border transition duration-300 ${selectedTemplate === template.id
+                      ? "is-selected border-[#00C875] bg-[#00C875]/[0.08] shadow-[0_0_35px_rgba(0,200,117,0.12)]"
+                      : "border-white/10 bg-[#090D0A] hover:-translate-y-1 hover:border-white/25"
                       }`}
                   >
                     <input
@@ -532,19 +547,36 @@ function CreatePortfolioPage() {
                       value={template.id}
                       checked={selectedTemplate === template.id}
                       onChange={() => setSelectedTemplate(template.id)}
-                      className="mt-1 accent-[#00C875]"
+                      className="sr-only"
                     />
-                    <span>
-                      <span className="block font-semibold">
-                        {template.name}
+                    <span className={`template-mini-preview template-mini-preview--${template.id}`}>
+                      <span className="template-mini-top"><i /><i /><i /><b>{template.initials}</b></span>
+                      <span className="template-mini-content">
+                        <span className="template-mini-kicker">{template.category}</span>
+                        <span className="template-mini-heading">{template.role}</span>
+                        <span className="template-mini-line template-mini-line--wide" />
+                        <span className="template-mini-line" />
+                        <span className="template-mini-projects"><i /><i /><i /></span>
                       </span>
-                      <span className="mt-1 block text-xs leading-5 text-[#A4B0A8]">
-                        {template.description}
+                      <span className="template-mini-shimmer" />
+                    </span>
+                    <span className="flex items-start justify-between gap-3 p-4">
+                      <span>
+                        <span className="flex items-center gap-2 font-bold text-white">
+                          {template.name}
+                          {selectedTemplate === template.id && <span className="rounded-full bg-[#00C875]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#8AFFC1]">Selected</span>}
+                        </span>
+                        <span className="mt-1 block text-xs leading-5 text-[#A4B0A8]">{template.description}</span>
+                        <span className="mt-2 block text-[10px] font-bold uppercase tracking-[0.18em] text-[#6D8C78]">{template.highlight}</span>
                       </span>
+                      <span className={`mt-1 grid size-5 shrink-0 place-items-center rounded-full border text-xs ${selectedTemplate === template.id ? "border-[#00C875] bg-[#00C875] text-[#041109]" : "border-white/25 text-transparent"}`}>✓</span>
                     </span>
                   </label>
                 ))}
               </div>
+              <p className="mt-5 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-xs leading-6 text-[#A4B0A8]">
+                Tip: Your information stays the same when you switch designs. Choose the style that best represents your work, then continue to preview your portfolio.
+              </p>
             </section>
           )}
 

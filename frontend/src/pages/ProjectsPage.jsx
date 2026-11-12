@@ -11,6 +11,7 @@ const emptyForm = {
   live_url: "",
 };
 
+
 function ProjectsPage() {
   const navigate = useNavigate();
 

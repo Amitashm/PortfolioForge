@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { signupUser } from "../services/auth";
+import GoogleSignInButton from "../components/auth/GoogleSignInButton";
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState("");
@@ -152,6 +153,8 @@ export default function SignupPage() {
             {isLoading ? "Creating account..." : "Create account"}
           </button>
         </form>
+
+        <GoogleSignInButton />
 
         <p className="mt-6 text-center text-sm text-gray-400">
           Already have an account?{" "}

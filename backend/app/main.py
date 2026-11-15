@@ -73,12 +73,13 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://localhost:5174",
+        "https://portfolio-forge-nine.vercel.app",
+        "https://portfolio-forge-7qwxdzslg-titan-drag.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # --------------------------------------------------
 # Database session dependency

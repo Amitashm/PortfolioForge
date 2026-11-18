@@ -75,6 +75,7 @@ app.add_middleware(
         "http://localhost:5174",
         "https://portfolio-forge-nine.vercel.app",
         "https://portfolio-forge-7qwxdzslg-titan-drag.vercel.app",
+        "https://portfolio-forge-4xphneou3-titan-drag.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],

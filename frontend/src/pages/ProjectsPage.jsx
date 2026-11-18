@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../services/apiConfig";
 
-const API_URL = "http://localhost:8000/api/projects";
+const API_URL = `${API_BASE_URL}/api/projects`;
 
 const emptyForm = {
   title: "",

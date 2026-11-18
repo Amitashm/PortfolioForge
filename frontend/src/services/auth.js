@@ -1,8 +1,4 @@
-const DEFAULT_API_BASE_URL = import.meta.env.PROD
-  ? "https://portfolioforge-production.up.railway.app"
-  : "http://127.0.0.1:8000";
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL)
-  .replace(/\/+$/, "");
+import { API_BASE_URL } from "./apiConfig";
 
 /**
  * Send a request to the FastAPI backend.

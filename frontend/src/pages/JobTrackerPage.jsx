@@ -6,14 +6,20 @@ const STATUSES = ["Interested", "Applied", "Interview", "Offer", "Rejected"];
 
 function JobTrackerPage() {
   const navigate = useNavigate();
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      return Array.isArray(saved) ? saved : [];
+    } catch {
+      return [];
+    }
+  });
   const [form, setForm] = useState({ company: "", role: "", location: "", url: "", date: new Date().toISOString().slice(0, 10), status: "Interested", notes: "" });
   const [filter, setFilter] = useState("All");
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
     if (!sessionStorage.getItem("access_token")) { navigate("/login", { replace: true }); return; }
-    try { setItems(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]")); } catch { setItems([]); }
   }, [navigate]);
 
   function persist(next) { setItems(next); localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); }

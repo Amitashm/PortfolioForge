@@ -8,7 +8,7 @@ import secrets
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token as google_id_token
 from jwt.exceptions import PyJWTError
-from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pwdlib import PasswordHash
@@ -956,12 +956,12 @@ def track_portfolio_visit(
 
 @app.get("/api/analytics/overview")
 def get_portfolio_analytics(
-    range: str = "7d",
+    visit_range: str = Query("7d", alias="range"),
     portfolio_id: int | None = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    if range not in {"7d", "30d"}:
+    if visit_range not in {"7d", "30d"}:
         raise HTTPException(status_code=400, detail="Range must be 7d or 30d.")
 
     portfolio = (db.query(Portfolio).filter(Portfolio.user_id == current_user.id, Portfolio.id == portfolio_id).first()
@@ -978,7 +978,8 @@ def get_portfolio_analytics(
         }
 
     now = datetime.now(timezone.utc)
-    start_day = now.date() - timedelta(days=(6 if range == "7d" else 29))
+    days = 7 if visit_range == "7d" else 30
+    start_day = now.date() - timedelta(days=days - 1)
     start_dt = datetime.combine(start_day, datetime.min.time(), tzinfo=timezone.utc)
 
     base = db.query(PortfolioVisit).filter(PortfolioVisit.portfolio_id == portfolio.id)
@@ -1006,7 +1007,6 @@ def get_portfolio_analytics(
         PortfolioVisit.created_at >= start_dt,
     ).group_by(func.date(PortfolioVisit.created_at)).all()
     counts = {str(row.visit_date): int(row.visits) for row in rows}
-    days = 7 if range == "7d" else 30
     daily_visits = []
     for offset in range(days):
         day = start_day + timedelta(days=offset)

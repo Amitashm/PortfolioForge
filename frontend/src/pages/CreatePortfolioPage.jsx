@@ -68,17 +68,20 @@ function CreatePortfolioPage() {
     requestedStepIndex ?? 0
   );
 
-  useEffect(() => {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [previousRequestedStep, setPreviousRequestedStep] = useState(requestedStepIndex);
+
+  if (previousRequestedStep !== requestedStepIndex) {
+    setPreviousRequestedStep(requestedStepIndex);
     if (requestedStepIndex !== undefined) {
       setCurrentStep(requestedStepIndex);
       setError("");
       setNotice("");
     }
-  }, [requestedStepIndex]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
+  }
 
   useEffect(() => {
     let active = true;
@@ -94,7 +97,7 @@ function CreatePortfolioPage() {
 
         // Keep the dashboard in sync with the portfolio retrieved from the API.
         localStorage.setItem("portfolioData", JSON.stringify(savedData));
-        localStorage.setItem("selectedTemplate", portfolio.template || selectedTemplate);
+        localStorage.setItem("selectedTemplate", validRequestedTemplate || portfolio.template || "minimal");
 
         const defaults = emptyPortfolio(
           sessionStorage.getItem("user")
@@ -136,7 +139,7 @@ function CreatePortfolioPage() {
     return () => {
       active = false;
     };
-  }, [validRequestedTemplate]);
+  }, [portfolioId, validRequestedTemplate]);
 
   function handleChange(event) {
     const { name, value } = event.target;

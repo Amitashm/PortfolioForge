@@ -77,7 +77,8 @@ function ProjectsPage() {
       return;
     }
 
-    loadProjects();
+    const timer = window.setTimeout(loadProjects, 0);
+    return () => window.clearTimeout(timer);
   }, [token, navigate, loadProjects]);
 
   function startNewProject() {

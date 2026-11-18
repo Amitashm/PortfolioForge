@@ -113,10 +113,16 @@ function countEntries(data, section) {
 function DashboardPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState(null);
+  const [user] = useState(() => {
+    try { return JSON.parse(sessionStorage.getItem("user")) || {}; }
+    catch { return {}; }
+  });
   const [menuOpen, setMenuOpen] = useState(false);
-  const [savedData, setSavedData] = useState({});
-  const [publishSlug, setPublishSlug] = useState("");
+  const [savedData, setSavedData] = useState(readSavedData);
+  const [publishSlug, setPublishSlug] = useState(() =>
+    (user.username || user.full_name || user.name || "").toLowerCase().trim()
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+  );
   const [publishedUrl, setPublishedUrl] = useState("");
   const [isPublished, setIsPublished] = useState(false);
   const [publishing, setPublishing] = useState(false);
@@ -126,17 +132,10 @@ function DashboardPage() {
 
   useEffect(() => {
     const token = sessionStorage.getItem("access_token");
-    const savedUser = sessionStorage.getItem("user");
     if (!token) {
       navigate("/login", { replace: true });
       return;
     }
-    try { setUser(savedUser ? JSON.parse(savedUser) : {}); }
-    catch { setUser({}); }
-
-    const initialName = (JSON.parse(savedUser || "{}")?.username || JSON.parse(savedUser || "{}")?.full_name || JSON.parse(savedUser || "{}")?.name || "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-    setPublishSlug(initialName);
-    refreshSavedData();
     window.addEventListener("focus", refreshSavedData);
     window.addEventListener("storage", refreshSavedData);
     return () => {

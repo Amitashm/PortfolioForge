@@ -23,7 +23,8 @@ export default function MyPortfoliosPage() {
 
   useEffect(() => {
     if (!sessionStorage.getItem("access_token")) { navigate("/login", { replace: true }); return; }
-    refresh();
+    const timer = window.setTimeout(refresh, 0);
+    return () => window.clearTimeout(timer);
   }, [navigate, refresh]);
 
   async function handleCreate() {

@@ -50,7 +50,8 @@ export default function AnalyticsPage() {
       navigate("/login", { replace: true });
       return;
     }
-    loadAnalytics();
+    const timer = window.setTimeout(loadAnalytics, 0);
+    return () => window.clearTimeout(timer);
   }, [navigate, loadAnalytics]);
 
   const visits = useMemo(() => Array.isArray(data?.daily_visits) ? data.daily_visits : [], [data]);

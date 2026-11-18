@@ -3,20 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { loginWithGoogle } from "../../services/auth";
 
 const GOOGLE_SCRIPT_URL = "https://accounts.google.com/gsi/client";
+const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim();
 
 export default function GoogleSignInButton() {
   const buttonRef = useRef(null);
   const navigate = useNavigate();
   const [error, setError] = useState("");
-  const [isConfigured, setIsConfigured] = useState(true);
-
   useEffect(() => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
-    if (!clientId) {
-      setIsConfigured(false);
-      return undefined;
-    }
+    if (!clientId) return undefined;
 
     let cancelled = false;
 
@@ -90,7 +84,7 @@ export default function GoogleSignInButton() {
         <span className="h-px flex-1 bg-white/10" />
       </div>
 
-      {isConfigured ? (
+      {clientId ? (
         <div className="flex min-h-11 justify-center">
           <div ref={buttonRef} className="max-w-full" />
         </div>

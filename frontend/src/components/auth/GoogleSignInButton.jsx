@@ -5,12 +5,15 @@ import { loginWithGoogle } from "../../services/auth";
 const GOOGLE_SCRIPT_URL = "https://accounts.google.com/gsi/client";
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim();
 
+const productionOrigin = "https://portfolio-forge-ten.vercel.app";
+const isHostedPreview = /^portfolio-forge-[a-z0-9-]+-titan-drag\.vercel\.app$/.test(window.location.hostname);
+
 export default function GoogleSignInButton() {
   const buttonRef = useRef(null);
   const navigate = useNavigate();
   const [error, setError] = useState("");
   useEffect(() => {
-    if (!clientId) return undefined;
+    if (!clientId || isHostedPreview) return undefined;
 
     let cancelled = false;
 
@@ -84,7 +87,11 @@ export default function GoogleSignInButton() {
         <span className="h-px flex-1 bg-white/10" />
       </div>
 
-      {clientId ? (
+      {isHostedPreview ? (
+        <a className="block text-center underline" href={productionOrigin + window.location.pathname}>
+          Continue to the public site for Google sign-in
+        </a>
+      ) : clientId ? (
         <div className="flex min-h-11 justify-center">
           <div ref={buttonRef} className="max-w-full" />
         </div>

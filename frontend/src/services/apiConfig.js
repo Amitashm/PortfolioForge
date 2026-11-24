@@ -1,6 +1,2 @@
-const DEFAULT_API_BASE_URL = import.meta.env.PROD
-  ? "https://portfolioforge-production.up.railway.app"
-  : "http://127.0.0.1:8000";
-
-export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL)
-  .replace(/\/+$/, "");
+// Vite and Vercel forward same-origin API requests to the backend.
+export const API_BASE_URL = "";

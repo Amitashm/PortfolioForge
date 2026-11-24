@@ -31,3 +31,5 @@ authentication and existing database rows are retained.
 For local development, your Google OAuth client's Authorized JavaScript origin
 must include `http://localhost:5173`, and your Google account must be listed as
 a test user while the consent screen is in Testing mode.
+
+For hosted sign-in, register https://portfolio-forge-ten.vercel.app under Authorized JavaScript origins on the Web application OAuth client used by VITE_GOOGLE_CLIENT_ID. Preview deployments link to that stable origin for Google sign-in.
